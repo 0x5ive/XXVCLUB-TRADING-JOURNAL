@@ -38,7 +38,7 @@
       --accent: #a78bfa;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
       margin: 0;
@@ -46,20 +46,18 @@
       background: var(--bg);
       color: var(--text-main);
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
-      width: 100vw;
-      overflow: hidden;
+      min-height: 100vh;
+      width: 100%;
       padding: 10px;
     }
 
     .app {
       width: 100%;
-      height: 100%;
-      max-width: 1400px;
+      max-width: 1200px;
       background: var(--card-bg);
-      padding: 15px;
+      padding: 12px;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       display: flex;
@@ -68,38 +66,35 @@
 
     .app-title {
       text-align: center;
-      font-size: 1.1rem;
-      color: var(--text-main);
+      font-size: 1rem;
       font-weight: 900;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
       text-transform: uppercase;
-      border-bottom: 2px solid var(--border);
     }
 
     header {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       margin-bottom: 10px;
       border-bottom: 1px solid var(--border);
       padding-bottom: 10px;
-      flex-shrink: 0;
     }
 
-    .month-nav { display: flex; align-items: center; gap: 8px; }
-    .month-nav h2 { font-size: 1.1rem; font-weight: 700; margin: 0; min-width: 160px; text-align: center; }
+    .month-nav { display: flex; align-items: center; gap: 5px; }
+    .month-nav h2 { font-size: 1rem; margin: 0; min-width: 120px; text-align: center; }
 
-    .stats-bar { display: flex; align-items: center; gap: 10px; }
+    .stats-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; justify-content: center; }
 
-    .pnl-container { display: flex; align-items: center; gap: 6px; font-size: 1rem; font-weight: 900; }
+    .pnl-container { display: flex; align-items: center; gap: 4px; font-size: 0.9rem; font-weight: 900; }
 
     .monthly-r-total {
-      padding: 4px 10px;
+      padding: 2px 8px;
       border-radius: 6px;
-      min-width: 70px;
-      text-align: center;
+      font-size: 0.9rem;
     }
     
     .monthly-r-total.win { color: var(--win-text); background: var(--win-bg); }
@@ -108,125 +103,99 @@
 
     .badge {
       background: var(--border);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
       font-weight: 700;
       color: var(--text-muted);
     }
 
     .calendar-grid {
       display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 6px;
-      flex: 1; 
-      min-height: 0;
+      grid-template-columns: repeat(8, 1fr); /* 7 days + 1 week total */
+      gap: 4px;
+      width: 100%;
     }
 
     .grid-label {
       text-align: center;
-      font-size: 0.8rem;
-      font-weight: 900; /* Bolded as requested */
-      color: var(--text-main);
+      font-size: 0.65rem;
+      font-weight: 900;
+      color: var(--text-muted);
       text-transform: uppercase;
-      padding-bottom: 5px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      padding-bottom: 4px;
     }
 
     .day {
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px;
+      border-radius: 4px;
+      padding: 4px;
+      min-height: 80px;
       display: flex;
       flex-direction: column;
       background: var(--card-bg);
       cursor: pointer;
-      overflow: hidden;
-      transition: background 0.2s;
+      position: relative;
     }
 
-    .day:hover { border-color: var(--accent); background: rgba(124, 58, 237, 0.02); }
-    .day.empty { background: transparent; border-color: transparent; cursor: default; }
-
-    .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-    .day-num { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
-    .daily-total { font-size: 0.8rem; font-weight: 800; }
+    .day-num { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); }
+    .daily-total { font-size: 0.7rem; font-weight: 800; text-align: right; }
 
     .trade-list {
       flex: 1;
-      overflow-y: auto;
-      scrollbar-width: none;
+      margin-top: 4px;
+      overflow: hidden;
     }
-    .trade-list::-webkit-scrollbar { display: none; }
 
     .trade-pill {
-      font-size: 0.65rem;
+      font-size: 0.55rem;
       font-weight: 700;
-      padding: 2px 5px;
-      border-radius: 4px;
+      padding: 1px 3px;
+      border-radius: 2px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
       margin-bottom: 2px;
-      background: var(--bg);
-      border-left: 3px solid var(--border);
+      border-left: 2px solid var(--border);
     }
 
     .trade-pill.win { background: var(--win-bg); border-left-color: var(--win-text); color: var(--win-text); }
     .trade-pill.loss { background: var(--loss-bg); border-left-color: var(--loss-text); color: var(--loss-text); }
     .trade-pill.be { background: var(--be-bg); border-left-color: var(--be-text); color: var(--be-text); }
 
-    .day.win-day { border-top: 3px solid var(--win-text); }
-    .day.loss-day { border-top: 3px solid var(--loss-text); }
-    .day.be-day { border-top: 3px solid var(--be-text); }
-
     .week-summary {
-      border: 1px solid var(--border);
       background: var(--bg);
-      border-radius: 8px;
+      border-radius: 4px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      padding: 4px;
+      border: 1px dashed var(--border);
     }
 
-    .week-label { font-size: 0.6rem; color: var(--text-muted); font-weight: 800; }
-    .week-total { font-size: 0.8rem; font-weight: 800; }
+    .week-label { font-size: 0.5rem; color: var(--text-muted); }
+    .week-total { font-size: 0.7rem; font-weight: 800; }
 
     .btn {
-      padding: 6px 10px;
-      border-radius: 6px;
+      padding: 5px 8px;
+      border-radius: 4px;
       border: 1px solid var(--border);
       background: var(--card-bg);
       color: var(--text-main);
-      cursor: pointer;
-      font-family: inherit;
       font-weight: 600;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
+      cursor: pointer;
     }
 
-    .btn-reset {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      background: var(--loss-bg);
-      color: var(--loss-text);
-      font-size: 0.65rem;
-      opacity: 0.6;
+    @media (max-width: 600px) {
+      .app { padding: 8px; }
+      .day { min-height: 65px; padding: 2px; }
+      .grid-label { font-size: 0.5rem; }
+      .trade-pill { font-size: 0.5rem; letter-spacing: -0.5px; }
+      .monthly-r-total { font-size: 0.8rem; }
     }
 
-    .delete-trade { cursor: pointer; margin-left: 4px; opacity: 0.5; }
-    .delete-trade:hover { opacity: 1; }
-
-    @media (max-width: 800px) {
-      header { flex-direction: column; gap: 10px; }
-      .calendar-grid { grid-template-columns: repeat(4, 1fr); overflow-y: auto; }
-      .grid-label { display: none; }
-      body { overflow-y: auto; height: auto; }
-    }
+    /* Hide week column labels on very small screens if needed, 
+       but keeping 8 cols maintains the "PC view" on mobile. */
   </style>
 </head>
 <body>
@@ -243,7 +212,6 @@
     
     <div class="stats-bar">
       <div class="pnl-container">
-        <span>PNL:</span>
         <div class="monthly-r-total" id="monthly-r-total"></div>
       </div>
       <div class="badge" id="month-stats"></div>
@@ -261,11 +229,12 @@
     <div class="grid-label">Thu</div>
     <div class="grid-label">Fri</div>
     <div class="grid-label">Sat</div>
-    <div class="grid-label"></div> <div id="calendar-days" style="display: contents;"></div>
+    <div class="grid-label">Total</div> 
+    <div id="calendar-days" style="display: contents;"></div>
   </div>
 </div>
 
-<button class="btn btn-reset" onclick="resetData()">Reset Data</button>
+<button class="btn" style="margin-top:20px; opacity:0.5;" onclick="resetData()">Reset Data</button>
 
 <script>
   const daysGrid = document.getElementById('calendar-days');
@@ -280,14 +249,8 @@
 
   function toggleTheme() {
     const body = document.body;
-    const btn = document.getElementById('theme-toggle');
-    if (body.getAttribute('data-theme') === 'dark') {
-      body.removeAttribute('data-theme');
-      btn.textContent = '🌙';
-    } else {
-      body.setAttribute('data-theme', 'dark');
-      btn.textContent = '☀️';
-    }
+    body.getAttribute('data-theme') === 'dark' ? body.removeAttribute('data-theme') : body.setAttribute('data-theme', 'dark');
+    document.getElementById('theme-toggle').textContent = body.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
   }
 
   function toggleUnit() {
@@ -296,11 +259,10 @@
       if (val === null) return;
       riskPerTrade = parseFloat(val) || 100;
       displayMode = '$';
-      document.getElementById('unit-toggle').textContent = 'Mode: $';
     } else {
       displayMode = 'R';
-      document.getElementById('unit-toggle').textContent = 'Mode: R';
     }
+    document.getElementById('unit-toggle').textContent = `Mode: ${displayMode}`;
     render();
   }
 
@@ -319,15 +281,16 @@
     daysGrid.innerHTML = '';
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    monthDisplay.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+    monthDisplay.textContent = `${currentDate.toLocaleString('default', { month: 'short' })} ${year}`;
 
     const firstDayIndex = new Date(year, month, 1).getDay();
     const lastDay = new Date(year, month + 1, 0).getDate();
     
-    let monthTotal = 0, totalTradesCount = 0, winningTradesCount = 0, activeDays = 0, dayCounter = 1, weekCounter = 1;
+    let monthTotal = 0, totalTradesCount = 0, winningTradesCount = 0, activeDays = 0, dayCounter = 1;
 
     for (let row = 0; row < 6; row++) {
-      let weekTotal = 0, hasDayInWeek = false;
+      let weekTotal = 0;
+      let hasDays = false;
 
       for (let col = 0; col < 7; col++) {
         const dayEl = document.createElement('div');
@@ -336,14 +299,13 @@
         if (currentIndex < firstDayIndex || dayCounter > lastDay) {
           dayEl.className = 'day empty';
         } else {
-          hasDayInWeek = true;
+          hasDays = true;
           const dateKey = `${year}-${month + 1}-${dayCounter}`;
           const dayData = trades[dateKey] || [];
           const dailySum = dayData.reduce((acc, t) => acc + t.r, 0);
           
           dayEl.className = 'day';
           if (dayData.length > 0) {
-            dayEl.classList.add(dailySum > 0 ? 'win-day' : (dailySum < 0 ? 'loss-day' : 'be-day'));
             activeDays++;
             totalTradesCount += dayData.length;
             dayData.forEach(t => { if(t.r > 0) winningTradesCount++; });
@@ -351,23 +313,21 @@
             weekTotal += dailySum;
           }
           
-          const d = dayCounter; 
-          dayEl.onclick = (e) => { if(!e.target.classList.contains('delete-trade')) addTrade(dateKey, d); };
-          
+          const d = dayCounter;
+          dayEl.onclick = () => addTrade(dateKey);
           dayEl.innerHTML = `
-            <div class="day-header">
-              <span class="day-num">${d}</span>
-              ${dayData.length > 0 ? `<span class="daily-total" style="color: ${dailySum > 0 ? 'var(--win-text)' : (dailySum < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">${formatR(dailySum)}</span>` : ''}
+            <div style="display:flex; justify-content:space-between">
+                <span class="day-num">${d}</span>
+                <span class="daily-total" style="color:${dailySum > 0 ? 'var(--win-text)' : (dailySum < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">${dayData.length ? formatR(dailySum) : ''}</span>
             </div>
             <div class="trade-list">
-              ${dayData.map((t, i) => `
+              ${dayData.slice(0, 3).map((t, i) => `
                 <div class="trade-pill ${t.r > 0 ? 'win' : (t.r < 0 ? 'loss' : 'be')}">
-                  <span>${t.dir}${t.pair} ${formatR(t.r)}</span>
-                  <span class="delete-trade" onclick="deleteTrade('${dateKey}', ${i})">×</span>
+                  ${t.dir}${t.pair} ${formatR(t.r)}
                 </div>
               `).join('')}
-            </div>
-          `;
+              ${dayData.length > 3 ? `<div style="font-size:0.5rem; text-align:center">+${dayData.length-3}</div>` : ''}
+            </div>`;
           dayCounter++;
         }
         daysGrid.appendChild(dayEl);
@@ -375,54 +335,42 @@
 
       const weekEl = document.createElement('div');
       weekEl.className = 'week-summary';
-      if (hasDayInWeek) {
-        weekEl.innerHTML = `<div class="week-label">WK ${weekCounter}</div>
-          <div class="week-total" style="color: ${weekTotal > 0 ? 'var(--win-text)' : (weekTotal < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">
-            ${formatR(weekTotal)}
-          </div>`;
-        weekCounter++;
-      } else { weekEl.style.visibility = 'hidden'; }
+      if (hasDays) {
+        weekEl.innerHTML = `<div class="week-label">WK</div><div class="week-total" style="color:${weekTotal > 0 ? 'var(--win-text)' : (weekTotal < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">${formatR(weekTotal)}</div>`;
+      }
       daysGrid.appendChild(weekEl);
-      if (dayCounter > lastDay && row >= 4) break; 
+      if (dayCounter > lastDay) break;
     }
 
-    const winRate = totalTradesCount > 0 ? ((winningTradesCount / totalTradesCount) * 100).toFixed(1) : 0;
-    monthlyRLabel.textContent = formatR(monthTotal);
+    const winRate = totalTradesCount > 0 ? ((winningTradesCount / totalTradesCount) * 100).toFixed(0) : 0;
+    monthlyRLabel.textContent = `Total: ${formatR(monthTotal)}`;
     monthlyRLabel.className = `monthly-r-total ${monthTotal > 0 ? 'win' : (monthTotal < 0 ? 'loss' : 'be')}`;
-    document.getElementById('month-stats').textContent = `${activeDays} trading days | ${totalTradesCount} trades | ${winRate}% WR`;
+    document.getElementById('month-stats').textContent = `${totalTradesCount} Trades | ${winRate}% WR`;
     localStorage.setItem('tradingDataV6', JSON.stringify(trades));
   }
 
-  function addTrade(dateKey, dayNum) {
-    let dir = prompt("Direction (B/S):", "B") || "B";
-    let pair = prompt("Pair:", "BTC") || "BTC";
-    let rInput = prompt("R-Multiple (or BE):", "1");
-    if (rInput === null) return;
-    let r = rInput.toUpperCase() === 'BE' ? 0 : parseFloat(rInput);
-    if (isNaN(r)) return;
+  function addTrade(dateKey) {
+    const input = prompt("Enter Trade (Direction Pair R)\nExample: B BTC 2 or S SOL BE");
+    if (!input) return;
+    const parts = input.split(" ");
+    if (parts.length < 3) return;
+
+    const dir = parts[0].toUpperCase() + "/";
+    const pair = parts[1].toUpperCase();
+    const r = parts[2].toUpperCase() === 'BE' ? 0 : parseFloat(parts[2]);
+
     if (!trades[dateKey]) trades[dateKey] = [];
-    trades[dateKey].push({ r, pair: pair.toUpperCase(), dir: dir.toUpperCase() + "/" });
+    trades[dateKey].push({ r, pair, dir });
     render();
   }
 
-  function deleteTrade(dateKey, index) {
-    event.stopPropagation();
-    if(confirm("Delete trade?")) {
-      trades[dateKey].splice(index, 1);
-      if(trades[dateKey].length === 0) delete trades[dateKey];
-      render();
-    }
-  }
-
-  function resetData() {
-    if(confirm("Delete all history?")) { trades = {}; render(); }
-  }
+  function resetData() { if(confirm("Clear all data?")) { trades = {}; render(); } }
 
   async function takeShot() {
     const app = document.getElementById('app');
     const canvas = await html2canvas(app, { scale: 2, backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg') });
     const link = document.createElement('a');
-    link.download = `Journal_${monthDisplay.textContent}.png`;
+    link.download = `Journal.png`;
     link.href = canvas.toDataURL();
     link.click();
   }
