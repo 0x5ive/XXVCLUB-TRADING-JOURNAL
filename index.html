@@ -48,9 +48,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh; /* Fixed viewport height */
+      height: 100vh;
       width: 100vw;
-      overflow: hidden; /* Disable page scroll */
+      overflow: hidden;
       padding: 10px;
     }
 
@@ -63,7 +63,7 @@
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       display: flex;
-      flex-direction: column; /* Stack Title, Header, Grid */
+      flex-direction: column;
     }
 
     .app-title {
@@ -82,7 +82,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       border-bottom: 1px solid var(--border);
       padding-bottom: 10px;
       flex-shrink: 0;
@@ -115,22 +115,24 @@
       color: var(--text-muted);
     }
 
-    /* Grid fills remaining space */
     .calendar-grid {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
       gap: 6px;
       flex: 1; 
-      min-height: 0; /* Important for flex-child scrolling */
+      min-height: 0;
     }
 
     .grid-label {
       text-align: center;
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 900; /* Bolded as requested */
+      color: var(--text-main);
       text-transform: uppercase;
       padding-bottom: 5px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
     }
 
     .day {
@@ -141,7 +143,7 @@
       flex-direction: column;
       background: var(--card-bg);
       cursor: pointer;
-      overflow: hidden; /* Keep it tidy */
+      overflow: hidden;
       transition: background 0.2s;
     }
 
@@ -152,13 +154,12 @@
     .day-num { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
     .daily-total { font-size: 0.8rem; font-weight: 800; }
 
-    /* Internal scroll for trades if they overflow a day card */
     .trade-list {
       flex: 1;
       overflow-y: auto;
-      scrollbar-width: none; /* Hide scrollbar Firefox */
+      scrollbar-width: none;
     }
-    .trade-list::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome/Safari */
+    .trade-list::-webkit-scrollbar { display: none; }
 
     .trade-pill {
       font-size: 0.65rem;
@@ -220,12 +221,11 @@
     .delete-trade { cursor: pointer; margin-left: 4px; opacity: 0.5; }
     .delete-trade:hover { opacity: 1; }
 
-    /* Small Screen Adjustments */
     @media (max-width: 800px) {
       header { flex-direction: column; gap: 10px; }
       .calendar-grid { grid-template-columns: repeat(4, 1fr); overflow-y: auto; }
       .grid-label { display: none; }
-      body { overflow-y: auto; height: auto; } /* Allow scroll on mobile ONLY if grid is too big */
+      body { overflow-y: auto; height: auto; }
     }
   </style>
 </head>
@@ -254,9 +254,14 @@
   </header>
 
   <div class="calendar-grid" id="main-grid">
-    <div class="grid-label">Sun</div><div class="grid-label">Mon</div><div class="grid-label">Tue</div><div class="grid-label">Wed</div>
-    <div class="grid-label">Thu</div><div class="grid-label">Fri</div><div class="grid-label">Sat</div><div class="grid-label"></div>
-    <div id="calendar-days" style="display: contents;"></div>
+    <div class="grid-label">Sun</div>
+    <div class="grid-label">Mon</div>
+    <div class="grid-label">Tue</div>
+    <div class="grid-label">Wed</div>
+    <div class="grid-label">Thu</div>
+    <div class="grid-label">Fri</div>
+    <div class="grid-label">Sat</div>
+    <div class="grid-label"></div> <div id="calendar-days" style="display: contents;"></div>
   </div>
 </div>
 
