@@ -383,7 +383,8 @@
       const weekEl = document.createElement('div');
       weekEl.className = 'week-summary';
       if (hasDayInWeek) {
-        weekEl.innerHTML = `<div class="week-label">WK ${weekCounter}</div>
+        // Updated label to all caps "WEEK"
+        weekEl.innerHTML = `<div class="week-label">WEEK ${weekCounter}</div>
           <div class="week-total" style="color: ${weekTotal > 0 ? 'var(--win-text)' : (weekTotal < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">
             ${formatR(weekTotal)}
           </div>`;
@@ -401,10 +402,9 @@
   }
 
   function addTrade(dateKey, dayNum) {
-    // Updated direction prompt text
     let dir = prompt("Direction (B = BUY & S = SELL):", "B") || "B";
     let pair = prompt("Pair:", "BTC") || "BTC";
-    let rInput = prompt("R-Multiple (or BE):", "1");
+    let rInput = prompt("Trade outcome in R-Multiple (or BE):", "1");
     if (rInput === null) return;
     let r = rInput.toUpperCase() === 'BE' ? 0 : parseFloat(rInput);
     if (isNaN(r)) return;
