@@ -383,7 +383,6 @@
       const weekEl = document.createElement('div');
       weekEl.className = 'week-summary';
       if (hasDayInWeek) {
-        // Updated label to all caps "WEEK"
         weekEl.innerHTML = `<div class="week-label">WEEK ${weekCounter}</div>
           <div class="week-total" style="color: ${weekTotal > 0 ? 'var(--win-text)' : (weekTotal < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">
             ${formatR(weekTotal)}
@@ -423,7 +422,22 @@
   }
 
   function resetData() {
-    if(confirm("Delete all history?")) { trades = {}; render(); }
+    const monthName = currentDate.toLocaleString('default', { month: 'long' });
+    const year = currentDate.getFullYear();
+    
+    if (confirm(`Delete all trade history for ${monthName} ${year}?`)) {
+      const monthToClear = currentDate.getMonth() + 1;
+      const yearToClear = currentDate.getFullYear();
+
+      Object.keys(trades).forEach(dateKey => {
+        const [y, m, d] = dateKey.split('-');
+        if (parseInt(y) === yearToClear && parseInt(m) === monthToClear) {
+          delete trades[dateKey];
+        }
+      });
+
+      render();
+    }
   }
 
   async function takeShot() {
