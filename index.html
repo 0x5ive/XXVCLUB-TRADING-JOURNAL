@@ -6,7 +6,6 @@
     (function() {
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
       if (isMobile) {
-        // Forces the browser to render at a desktop-width of 1400px
         document.write('<meta name="viewport" content="width=1400">');
       } else {
         document.write('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
@@ -14,6 +13,11 @@
     })();
   </script>
   <title>XXVCLUB TRADING JOURNAL</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
     :root {
@@ -52,7 +56,7 @@
 
     body {
       margin: 0;
-      font-family: "Comic Sans MS", "Comic Sans", cursive;
+      font-family: 'Quicksand', sans-serif;
       background: var(--bg);
       color: var(--text-main);
       display: flex;
@@ -80,7 +84,7 @@
       text-align: center;
       font-size: 1.1rem;
       color: var(--text-main);
-      font-weight: 900;
+      font-weight: 700;
       letter-spacing: 2px;
       margin-bottom: 10px;
       padding-bottom: 10px;
@@ -103,7 +107,7 @@
 
     .stats-bar { display: flex; align-items: center; gap: 10px; }
 
-    .pnl-container { display: flex; align-items: center; gap: 6px; font-size: 1rem; font-weight: 900; }
+    .pnl-container { display: flex; align-items: center; gap: 6px; font-size: 1rem; font-weight: 700; }
 
     .monthly-r-total {
       padding: 4px 10px;
@@ -127,7 +131,7 @@
 
     .calendar-grid {
       display: grid;
-      grid-template-columns: repeat(8, 1fr); /* Maintains 8 columns for Desktop layout */
+      grid-template-columns: repeat(8, 1fr);
       gap: 6px;
       flex: 1; 
       min-height: 0;
@@ -136,7 +140,7 @@
     .grid-label {
       text-align: center;
       font-size: 0.8rem;
-      font-weight: 900;
+      font-weight: 700;
       color: var(--text-main);
       text-transform: uppercase;
       padding-bottom: 5px;
@@ -162,7 +166,7 @@
 
     .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .day-num { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
-    .daily-total { font-size: 0.8rem; font-weight: 800; }
+    .daily-total { font-size: 0.8rem; font-weight: 700; }
 
     .trade-list {
       flex: 1;
@@ -173,7 +177,7 @@
 
     .trade-pill {
       font-size: 0.65rem;
-      font-weight: 700;
+      font-weight: 600;
       padding: 2px 5px;
       border-radius: 4px;
       display: flex;
@@ -203,8 +207,8 @@
       padding: 4px;
     }
 
-    .week-label { font-size: 0.6rem; color: var(--text-muted); font-weight: 800; }
-    .week-total { font-size: 0.8rem; font-weight: 800; }
+    .week-label { font-size: 0.6rem; color: var(--text-muted); font-weight: 700; }
+    .week-total { font-size: 0.8rem; font-weight: 700; }
 
     .btn {
       padding: 6px 10px;
@@ -230,8 +234,6 @@
 
     .delete-trade { cursor: pointer; margin-left: 4px; opacity: 0.5; }
     .delete-trade:hover { opacity: 1; }
-
-    /* Note: Mobile media queries removed to preserve Desktop layout */
   </style>
 </head>
 <body>
@@ -399,7 +401,8 @@
   }
 
   function addTrade(dateKey, dayNum) {
-    let dir = prompt("Direction (B/S):", "B") || "B";
+    // Updated direction prompt text
+    let dir = prompt("Direction (B = BUY & S = SELL):", "B") || "B";
     let pair = prompt("Pair:", "BTC") || "BTC";
     let rInput = prompt("R-Multiple (or BE):", "1");
     if (rInput === null) return;
