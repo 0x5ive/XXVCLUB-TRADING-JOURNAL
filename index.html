@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>XXVCLUB TRADING JOURNAL</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --bg: #f8f9fb;
+      --card-bg: #ffffff;
+      --text-main: #1a1d23;
+      --text-muted: #70757e;
+      --border: #e2e4e8;
+      --win-bg: #e8f7f0;
+      --win-text: #22c55e;
+      --win-border: #bbf7d0;
+      --loss-bg: #fef2f2;
+      --loss-text: #ef4444;
+      --loss-border: #fecaca;
+      --be-bg: #f1f3f5;
+      --be-text: #495057;
+      --accent: #7c3aed;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --win-bg: #064e3b;
+      --win-text: #4ade80;
+      --loss-bg: #7f1d1d;
+      --loss-text: #f87171;
+      --be-bg: #334155;
+      --be-text: #cbd5e1;
+      --accent: #a78bfa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
+      background: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+      transition: background 0.3s ease;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1300px;
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .app-title {
+      text-align: center;
+      font-size: 1.2rem;
+      color: var(--text-main);
+      font-weight: 900;
+      letter-spacing: 4px;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--border);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 25px;
+    }
+
+    .month-nav { display: flex; align-items: center; gap: 12px; }
+    .month-nav h2 { font-size: 1.4rem; font-weight: 700; margin: 0; min-width: 220px; text-align: center; }
+
+    .stats-bar { display: flex; align-items: center; gap: 15px; }
+
+    /* PNL Label and Total Grouping */
+    .pnl-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      font-weight: 900;
+    }
+
+    .monthly-r-total {
+      padding: 6px 12px;
+      border-radius: 6px;
+      min-width: 90px;
+      text-align: center;
+    }
+    
+    .monthly-r-total.win { color: var(--win-text); background: var(--win-bg); }
+    .monthly-r-total.loss { color: var(--loss-text); background: var(--loss-bg); }
+    .monthly-r-total.be { color: var(--be-text); background: var(--be-bg); }
+
+    .badge {
+      background: var(--border);
+      padding: 10px 18px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 12px;
+    }
+
+    .grid-label {
+      text-align: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 10px 0;
+    }
+
+    .day {
+      min-height: 160px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .day:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .day.empty { background: transparent; border-color: transparent; cursor: default; }
+
+    .day-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .day-num { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
+    .daily-total { font-size: 0.95rem; font-weight: 800; }
+
+    .trade-pill {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      background: var(--bg);
+      border-left: 4px solid var(--border);
+      position: relative;
+    }
+
+    .trade-pill.win { background: var(--win-bg); border-left-color: var(--win-text); color: var(--win-text); }
+    .trade-pill.loss { background: var(--loss-bg); border-left-color: var(--loss-text); color: var(--loss-text); }
+    .trade-pill.be { background: var(--be-bg); border-left-color: var(--be-text); color: var(--be-text); }
+
+    .delete-trade {
+      opacity: 0;
+      margin-left: 6px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: opacity 0.2s;
+    }
+    .trade-pill:hover .delete-trade { opacity: 0.6; }
+
+    .day.win-day { border-top: 4px solid var(--win-text); }
+    .day.loss-day { border-top: 4px solid var(--loss-text); }
+    .day.be-day { border-top: 4px solid var(--be-text); }
+
+    .week-summary {
+      border: 1px solid var(--border);
+      background: var(--bg);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .week-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+    }
+
+    .btn-reset {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--loss-bg);
+      color: var(--loss-text);
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="app-title">XXVCLUB TRADING JOURNAL</div>
+
+  <header>
+    <div class="month-nav">
+      <button class="btn" onclick="changeMonth(-1)">◀</button>
+      <h2 id="current-month-display">February 2026</h2>
+      <button class="btn" onclick="changeMonth(1)">▶</button>
+    </div>
+    
+    <div class="stats-bar">
+      <div class="pnl-container">
+        <span>PNL:</span>
+        <div class="monthly-r-total" id="monthly-r-total">+0.0R</div>
+      </div>
+      
+      <div class="badge" id="month-stats">0 trading days | 0 trades | 0% WR</div>
+      
+      <button class="btn" onclick="toggleUnit()" id="unit-toggle">Mode: R</button>
+      <button class="btn" onclick="toggleTheme()" id="theme-toggle">🌙</button>
+      <button class="btn" onclick="takeShot()">📸</button>
+    </div>
+  </header>
+
+  <div class="calendar-grid">
+    <div class="grid-label">Sun</div>
+    <div class="grid-label">Mon</div>
+    <div class="grid-label">Tue</div>
+    <div class="grid-label">Wed</div>
+    <div class="grid-label">Thu</div>
+    <div class="grid-label">Fri</div>
+    <div class="grid-label">Sat</div>
+    <div class="grid-label"></div>
+    <div id="calendar-days" style="display: contents;"></div>
+  </div>
+</div>
+
+<button class="btn btn-reset" onclick="resetData()">Reset All Data</button>
+
+<script>
+  const daysGrid = document.getElementById('calendar-days');
+  const monthDisplay = document.getElementById('current-month-display');
+  const monthlyRLabel = document.getElementById('monthly-r-total');
+  
+  let currentDate = new Date();
+  currentDate.setDate(1);
+  let trades = JSON.parse(localStorage.getItem('tradingDataV6')) || {};
+  
+  // New variables for Toggle Logic
+  let displayMode = 'R'; // 'R' or '$'
+  let riskPerTrade = 100;
+
+  function toggleTheme() {
+    const body = document.body;
+    const btn = document.getElementById('theme-toggle');
+    if (body.getAttribute('data-theme') === 'dark') {
+      body.removeAttribute('data-theme');
+      btn.textContent = '🌙';
+    } else {
+      body.setAttribute('data-theme', 'dark');
+      btn.textContent = '☀️';
+    }
+  }
+
+  // Toggle Functionality
+  function toggleUnit() {
+    if (displayMode === 'R') {
+      const val = prompt("Enter your Risk per Trade (e.g. 100 for $100):", riskPerTrade);
+      if (val === null) return;
+      riskPerTrade = parseFloat(val) || 100;
+      displayMode = '$';
+      document.getElementById('unit-toggle').textContent = 'Mode: $';
+    } else {
+      displayMode = 'R';
+      document.getElementById('unit-toggle').textContent = 'Mode: R';
+    }
+    render();
+  }
+
+  function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); render(); }
+
+  // Updated formatR to handle $ conversion
+  function formatR(val, showPlus = true) {
+    if (val === 0) return "BE";
+    
+    if (displayMode === '$') {
+      const dollarVal = val * riskPerTrade;
+      const sign = showPlus && dollarVal > 0 ? "+" : (dollarVal < 0 ? "" : "");
+      return sign + "$" + dollarVal.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    } else {
+      return (showPlus && val > 0 ? "+" : "") + val.toFixed(1) + "R";
+    }
+  }
+
+  function render() {
+    daysGrid.innerHTML = '';
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    monthDisplay.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const lastDay = new Date(year, month + 1, 0).getDate();
+    
+    let monthTotal = 0, totalTradesCount = 0, winningTradesCount = 0, activeDays = 0, dayCounter = 1, weekCounter = 1;
+
+    for (let row = 0; row < 6; row++) {
+      let weekTotal = 0, hasDayInWeek = false;
+
+      for (let col = 0; col < 7; col++) {
+        const dayEl = document.createElement('div');
+        const currentIndex = (row * 7) + col;
+
+        if (currentIndex < firstDayIndex || dayCounter > lastDay) {
+          dayEl.className = 'day empty';
+        } else {
+          hasDayInWeek = true;
+          const dateKey = `${year}-${month + 1}-${dayCounter}`;
+          const dayData = trades[dateKey] || [];
+          const dailySum = dayData.reduce((acc, t) => acc + t.r, 0);
+          
+          dayEl.className = 'day';
+          if (dayData.length > 0) {
+            dayEl.classList.add(dailySum > 0 ? 'win-day' : (dailySum < 0 ? 'loss-day' : 'be-day'));
+            activeDays++;
+            totalTradesCount += dayData.length;
+            dayData.forEach(t => { if(t.r > 0) winningTradesCount++; });
+            monthTotal += dailySum;
+            weekTotal += dailySum;
+          }
+          
+          const d = dayCounter; 
+          dayEl.onclick = (e) => {
+            if(e.target.classList.contains('delete-trade')) return;
+            addTrade(dateKey, d);
+          };
+          
+          dayEl.innerHTML = `
+            <div class="day-header">
+              <span class="day-num">${d < 10 ? '0' + d : d}</span>
+              ${dayData.length > 0 ? `<span class="daily-total" style="color: ${dailySum > 0 ? 'var(--win-text)' : (dailySum < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">${formatR(dailySum)}</span>` : ''}
+            </div>
+            <div class="trade-list">
+              ${dayData.map((t, i) => `
+                <div class="trade-pill ${t.r > 0 ? 'win' : (t.r < 0 ? 'loss' : 'be')}">
+                  <span style="flex-grow: 1;">${t.dir}${t.pair} ${formatR(t.r)}</span>
+                  <span class="delete-trade" onclick="deleteTrade('${dateKey}', ${i})">×</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          dayCounter++;
+        }
+        daysGrid.appendChild(dayEl);
+      }
+
+      const weekEl = document.createElement('div');
+      weekEl.className = 'week-summary';
+      if (hasDayInWeek) {
+        weekEl.innerHTML = `<div class="week-label">WEEK ${weekCounter}</div>
+          <div class="week-total" style="color: ${weekTotal > 0 ? 'var(--win-text)' : (weekTotal < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">
+            ${formatR(weekTotal)}
+          </div>`;
+        weekCounter++;
+      } else { weekEl.style.opacity = '0'; }
+      daysGrid.appendChild(weekEl);
+      if (dayCounter > lastDay && row >= 4) break; 
+    }
+
+    const winRate = totalTradesCount > 0 ? ((winningTradesCount / totalTradesCount) * 100).toFixed(1) : 0;
+    monthlyRLabel.textContent = formatR(monthTotal);
+    monthlyRLabel.className = `monthly-r-total ${monthTotal > 0 ? 'win' : (monthTotal < 0 ? 'loss' : 'be')}`;
+    
+    // Updated text to "trading days"
+    document.getElementById('month-stats').textContent = `${activeDays} trading days | ${totalTradesCount} trades | ${winRate}% WR`;
+    localStorage.setItem('tradingDataV6', JSON.stringify(trades));
+  }
+
+  function addTrade(dateKey, dayNum) {
+    let dir = prompt(`Enter Direction (B/S):`, "B");
+    if (!dir) return;
+    dir = dir.toUpperCase() === 'B' ? 'B/' : 'S/';
+    let pair = prompt(`Enter Pair:`, "BTC");
+    if (!pair) return;
+    let rInput = prompt(`Enter R-Multiple (or BE):`, "BE");
+    if (rInput === null) return;
+    let r = rInput.toUpperCase() === 'BE' ? 0 : parseFloat(rInput);
+    if (isNaN(r)) return;
+    if (!trades[dateKey]) trades[dateKey] = [];
+    trades[dateKey].push({ r, pair: pair.toUpperCase(), dir });
+    render();
+  }
+
+  function deleteTrade(dateKey, index) {
+    if(confirm("Delete this specific trade?")) {
+      trades[dateKey].splice(index, 1);
+      if(trades[dateKey].length === 0) delete trades[dateKey];
+      render();
+    }
+  }
+
+  function resetData() {
+    if(confirm("Permanently delete all trade history?")) {
+      if(confirm("Final confirmation: Delete everything?")) {
+        trades = {};
+        render();
+      }
+    }
+  }
+
+  async function takeShot() {
+    const app = document.getElementById('app');
+    const canvas = await html2canvas(app, { scale: 2, backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg') });
+    const link = document.createElement('a');
+    link.download = `Journal_${monthDisplay.textContent.replace(' ', '_')}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+
+  render();
+</script>
+</body>
+</html>
