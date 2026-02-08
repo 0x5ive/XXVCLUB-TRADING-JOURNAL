@@ -190,7 +190,6 @@
 
     .btn:hover::after { visibility: visible; opacity: 1; }
 
-    /* Modal Styling */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -307,9 +306,9 @@
 
   <header>
     <div class="month-nav">
-      <button class="btn" onclick="changeMonth(-1)" data-tooltip="Previous Month">◀</button>
+      <button class="btn ui-control" onclick="changeMonth(-1)" data-tooltip="Previous Month">◀</button>
       <h2 id="current-month-display"></h2>
-      <button class="btn" onclick="changeMonth(1)" data-tooltip="Next Month">▶</button>
+      <button class="btn ui-control" onclick="changeMonth(1)" data-tooltip="Next Month">▶</button>
     </div>
     
     <div class="stats-bar">
@@ -319,14 +318,14 @@
       </div>
       <div class="badge" id="month-stats"></div>
 
-      <button class="btn btn-info" onclick="openModal()" data-tooltip="Feature List">i</button>
+      <button class="btn btn-info ui-control" onclick="openModal()" data-tooltip="Feature List">i</button>
       
-      <button class="btn" onclick="toggleUnit()" id="unit-toggle" data-tooltip="Switch R / $ View">Mode: R</button>
-      <button class="btn" onclick="toggleTheme()" id="theme-toggle" data-tooltip="Toggle Dark Mode">🌙</button>
-      <button class="btn" onclick="takeShot()" data-tooltip="Save Screenshot">📸</button>
-      <button class="btn" onclick="exportCSV()" data-tooltip="Export Data (CSV)">📤</button>
+      <button class="btn ui-control" onclick="toggleUnit()" id="unit-toggle" data-tooltip="Switch R / $ View">Mode: R</button>
+      <button class="btn ui-control" onclick="toggleTheme()" id="theme-toggle" data-tooltip="Toggle Dark Mode">🌙</button>
+      <button class="btn ui-control" onclick="takeShot()" data-tooltip="Save Screenshot">📸</button>
+      <button class="btn ui-control" onclick="exportCSV()" data-tooltip="Export Data (CSV)">📤</button>
       
-      <label class="btn" data-tooltip="Import Data (CSV)" style="display: flex; align-items: center; cursor: pointer;">
+      <label class="btn ui-control" data-tooltip="Import Data (CSV)" style="display: flex; align-items: center; cursor: pointer;">
         📥 <input type="file" id="csv-input" accept=".csv" style="display: none;" onchange="importCSV(event)">
       </label>
     </div>
@@ -389,7 +388,7 @@
   </div>
 </div>
 
-<button class="btn btn-reset" onclick="resetData()" data-tooltip="Clear current month trades">Reset Data</button>
+<button class="btn btn-reset ui-control" onclick="resetData()" data-tooltip="Clear current month trades">Reset Data</button>
 
 <script>
   const daysGrid = document.getElementById('calendar-days');
@@ -494,7 +493,7 @@
               ${dayData.map((t, i) => `
                 <div class="trade-pill ${t.r > 0 ? 'win' : (t.r < 0 ? 'loss' : 'be')}">
                   <span>${t.dir}${t.pair} ${formatR(t.r)}</span>
-                  <span class="delete-trade" onclick="deleteTrade('${dateKey}', ${i})">×</span>
+                  <span class="delete-trade ui-control" onclick="deleteTrade('${dateKey}', ${i})">×</span>
                 </div>
               `).join('')}
             </div>
@@ -614,7 +613,20 @@
 
   async function takeShot() {
     const app = document.getElementById('app');
-    const canvas = await html2canvas(app, { scale: 2, backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg') });
+    const controls = document.querySelectorAll('.ui-control');
+    
+    // Hide controls
+    controls.forEach(c => c.style.display = 'none');
+    
+    const canvas = await html2canvas(app, { 
+      scale: 2, 
+      backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg'),
+      logging: false
+    });
+    
+    // Restore controls
+    controls.forEach(c => c.style.display = '');
+
     const link = document.createElement('a');
     link.download = `Journal_${monthDisplay.textContent}.png`;
     link.href = canvas.toDataURL();
