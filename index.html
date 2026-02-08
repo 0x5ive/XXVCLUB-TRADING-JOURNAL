@@ -36,6 +36,7 @@
       --be-text: #495057;
       --accent: #7c3aed;
       --tooltip-bg: #1e293b;
+      --modal-overlay: rgba(0,0,0,0.4);
     }
 
     [data-theme="dark"] {
@@ -52,6 +53,7 @@
       --be-text: #cbd5e1;
       --accent: #a78bfa;
       --tooltip-bg: #475569;
+      --modal-overlay: rgba(0,0,0,0.7);
     }
 
     * { box-sizing: border-box; }
@@ -131,7 +133,6 @@
       color: var(--text-muted);
     }
 
-    /* Button styles & Hover Tooltips */
     .btn {
       position: relative;
       padding: 6px 10px;
@@ -143,9 +144,29 @@
       font-family: inherit;
       font-weight: 600;
       font-size: 0.8rem;
+      transition: all 0.2s;
     }
 
-    /* Tooltip styling on buttons */
+    .btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .btn-info {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+    }
+    
+    .btn-info:hover {
+      background: var(--accent);
+      color: white;
+    }
+
     .btn[data-tooltip]::after {
       content: attr(data-tooltip);
       position: absolute;
@@ -167,111 +188,114 @@
       font-weight: 500;
     }
 
-    .btn:hover::after {
-      visibility: visible;
-      opacity: 1;
+    .btn:hover::after { visibility: visible; opacity: 1; }
+
+    /* Modal Styling */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--modal-overlay);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
     }
 
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 6px;
-      flex: 1; 
-      min-height: 0;
-    }
-
-    .grid-label {
-      text-align: center;
-      font-size: 0.8rem;
-      font-weight: 700;
+    .modal-content {
+      background: var(--card-bg);
       color: var(--text-main);
+      padding: 30px;
+      border-radius: 20px;
+      max-width: 650px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .modal-header {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 25px;
+      text-align: center;
+      color: var(--accent);
       text-transform: uppercase;
-      padding-bottom: 5px;
+      letter-spacing: 1px;
+    }
+
+    .feature-section {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: var(--bg);
+      border-radius: 12px;
+    }
+
+    .feature-section h4 {
+      margin: 0 0 10px 0;
+      font-size: 1rem;
+      color: var(--accent);
       display: flex;
-      align-items: flex-end;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-section ul {
+      margin: 0;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .feature-section li {
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .feature-section li b { color: var(--text-main); }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--be-bg);
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      color: var(--text-main);
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
       justify-content: center;
     }
 
-    .day {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 6px;
-      display: flex;
-      flex-direction: column;
-      background: var(--card-bg);
-      cursor: pointer;
-      overflow: hidden;
-      transition: background 0.2s;
-    }
-
+    .calendar-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; flex: 1; min-height: 0; }
+    .grid-label { text-align: center; font-size: 0.8rem; font-weight: 700; color: var(--text-main); text-transform: uppercase; padding-bottom: 5px; display: flex; align-items: flex-end; justify-content: center; }
+    .day { border: 1px solid var(--border); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; background: var(--card-bg); cursor: pointer; overflow: hidden; transition: background 0.2s; }
     .day:hover { border-color: var(--accent); background: rgba(124, 58, 237, 0.02); }
     .day.empty { background: transparent; border-color: transparent; cursor: default; }
-
     .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
     .day-num { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
     .daily-total { font-size: 0.8rem; font-weight: 700; }
-
-    .trade-list {
-      flex: 1;
-      overflow-y: auto;
-      scrollbar-width: none;
-    }
+    .trade-list { flex: 1; overflow-y: auto; scrollbar-width: none; }
     .trade-list::-webkit-scrollbar { display: none; }
-
-    .trade-pill {
-      font-size: 0.65rem;
-      font-weight: 600;
-      padding: 2px 5px;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2px;
-      background: var(--bg);
-      border-left: 3px solid var(--border);
-    }
-
+    .trade-pill { font-size: 0.65rem; font-weight: 600; padding: 2px 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px; background: var(--bg); border-left: 3px solid var(--border); }
     .trade-pill.win { background: var(--win-bg); border-left-color: var(--win-text); color: var(--win-text); }
     .trade-pill.loss { background: var(--loss-bg); border-left-color: var(--loss-text); color: var(--loss-text); }
     .trade-pill.be { background: var(--be-bg); border-left-color: var(--be-text); color: var(--be-text); }
-
     .day.win-day { border-top: 3px solid var(--win-text); }
     .day.loss-day { border-top: 3px solid var(--loss-text); }
     .day.be-day { border-top: 3px solid var(--be-text); }
-
-    .week-summary {
-      border: 1px solid var(--border);
-      background: var(--bg);
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 4px;
-    }
-
+    .week-summary { border: 1px solid var(--border); background: var(--bg); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4px; }
     .week-label { font-size: 0.6rem; color: var(--text-muted); font-weight: 700; }
     .week-total { font-size: 0.8rem; font-weight: 700; }
-
-    footer {
-      margin-top: 10px;
-      text-align: center;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      opacity: 0.8;
-      font-weight: 500;
-    }
-
-    .btn-reset {
-      position: fixed;
-      bottom: 10px;
-      right: 10px;
-      background: var(--loss-bg);
-      color: var(--loss-text);
-      font-size: 0.65rem;
-      opacity: 0.6;
-    }
-
+    footer { margin-top: 10px; text-align: center; font-size: 0.65rem; color: var(--text-muted); opacity: 0.8; font-weight: 500; }
+    .btn-reset { position: fixed; bottom: 10px; right: 10px; background: var(--loss-bg); color: var(--loss-text); font-size: 0.65rem; opacity: 0.6; }
     .delete-trade { cursor: pointer; margin-left: 4px; opacity: 0.5; }
     .delete-trade:hover { opacity: 1; }
   </style>
@@ -295,6 +319,8 @@
       </div>
       <div class="badge" id="month-stats"></div>
 
+      <button class="btn btn-info" onclick="openModal()" data-tooltip="Feature List">i</button>
+      
       <button class="btn" onclick="toggleUnit()" id="unit-toggle" data-tooltip="Switch R / $ View">Mode: R</button>
       <button class="btn" onclick="toggleTheme()" id="theme-toggle" data-tooltip="Toggle Dark Mode">🌙</button>
       <button class="btn" onclick="takeShot()" data-tooltip="Save Screenshot">📸</button>
@@ -320,6 +346,49 @@
   <footer>Vibe coded by @0x5ive</footer>
 </div>
 
+<div class="modal-overlay" id="infoModal" onclick="closeModal()">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <button class="close-modal" onclick="closeModal()">✕</button>
+    <div class="modal-header">XXVCLUB Journal Features</div>
+    
+    <div class="feature-section">
+      <h4>1. Core System</h4>
+      <ul>
+        <li><b>Instant Saving:</b> Every trade you enter is automatically saved to your browser. You never have to worry about hitting a "save" button.</li>
+        <li><b>Smart Switching:</b> You can look at your progress using simple "Points" (R-Multiples) or switch to a real "Dollar" ($) view to see your actual account growth.</li>
+        <li><b>Rapid Logging:</b> A quick entry system lets you record a trade's direction, the asset pair, and the result in a few seconds.</li>
+      </ul>
+    </div>
+
+    <div class="feature-section">
+      <h4>2. Visual Dashboard</h4>
+      <ul>
+        <li><b>Color-Coded Progress:</b> The calendar acts as a heat map. Days turn Green for profits, Red for losses, and Gray for breaking even, giving you an immediate visual of your "winning streaks."</li>
+        <li><b>Real-Time Scoreboard:</b> A summary at the top tracks your Win Rate percentage and gives you a count of exactly how many wins, losses, and break-evens you have for the month.</li>
+        <li><b>Weekly Snapshots:</b> The journal automatically adds up your results for each individual week.</li>
+      </ul>
+    </div>
+
+    <div class="feature-section">
+      <h4>3. Data Portability</h4>
+      <ul>
+        <li><b>Export:</b> You can turn your entire digital history into a file to keep on your computer or open in Excel.</li>
+        <li><b>Import:</b> If you move to a new laptop, you can upload that file to restore your entire journal instantly.</li>
+        <li><b>Picture Mode (📸):</b> A "snapshot" button lets you download a high-quality image of your monthly calendar to share or keep in a visual folder.</li>
+      </ul>
+    </div>
+
+    <div class="feature-section">
+      <h4>4. Design & Comfort</h4>
+      <ul>
+        <li><b>Clean Interface:</b> To keep things tidy, buttons don't have permanent labels. Instead, descriptions pop up only when you hover your mouse over them.</li>
+        <li><b>Night Mode:</b> A light/dark toggle helps protect your eyes depending on your trading environment.</li>
+        <li><b>Device Flexibility:</b> The layout is designed to stay readable whether you are at your desk or checking your stats on a phone while rotated to landscape.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 <button class="btn btn-reset" onclick="resetData()" data-tooltip="Clear current month trades">Reset Data</button>
 
 <script>
@@ -332,6 +401,9 @@
   let trades = JSON.parse(localStorage.getItem('tradingDataV6')) || {};
   let displayMode = 'R'; 
   let riskPerTrade = 100;
+
+  function openModal() { document.getElementById('infoModal').style.display = 'flex'; }
+  function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
 
   function toggleTheme() {
     const body = document.body;
@@ -484,18 +556,13 @@
   function resetData() {
     const monthName = currentDate.toLocaleString('default', { month: 'long' });
     const year = currentDate.getFullYear();
-    
     if (confirm(`Delete all trade history for ${monthName} ${year}?`)) {
       const monthToClear = currentDate.getMonth() + 1;
       const yearToClear = currentDate.getFullYear();
-
       Object.keys(trades).forEach(dateKey => {
         const [y, m, d] = dateKey.split('-');
-        if (parseInt(y) === yearToClear && parseInt(m) === monthToClear) {
-          delete trades[dateKey];
-        }
+        if (parseInt(y) === yearToClear && parseInt(m) === monthToClear) delete trades[dateKey];
       });
-
       render();
     }
   }
@@ -503,11 +570,8 @@
   function exportCSV() {
     let csvContent = "Date,Direction,Pair,R-Multiple\n";
     Object.keys(trades).forEach(date => {
-      trades[date].forEach(t => {
-        csvContent += `${date},${t.dir.replace('/', '')},${t.pair},${t.r}\n`;
-      });
+      trades[date].forEach(t => { csvContent += `${date},${t.dir.replace('/', '')},${t.pair},${t.r}\n`; });
     });
-    
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -522,26 +586,18 @@
   function importCSV(event) {
     const file = event.target.files[0];
     if (!file) return;
-    
     const reader = new FileReader();
     reader.onload = function(e) {
       const text = e.target.result;
       const lines = text.split('\n');
       const newTrades = {};
-      
       for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
         const [date, dir, pair, r] = lines[i].split(',');
         if (!date || !dir || !pair || r === undefined) continue;
-        
         if (!newTrades[date]) newTrades[date] = [];
-        newTrades[date].push({
-          dir: dir.trim() + "/",
-          pair: pair.trim(),
-          r: parseFloat(r)
-        });
+        newTrades[date].push({ dir: dir.trim() + "/", pair: pair.trim(), r: parseFloat(r) });
       }
-      
       if (confirm("Importing will merge these trades with your current data. Continue?")) {
         Object.keys(newTrades).forEach(date => {
           if (!trades[date]) trades[date] = [];
