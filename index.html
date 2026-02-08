@@ -35,6 +35,7 @@
       --be-bg: #f1f3f5;
       --be-text: #495057;
       --accent: #7c3aed;
+      --tooltip-bg: #1e293b;
     }
 
     [data-theme="dark"] {
@@ -50,6 +51,7 @@
       --be-bg: #334155;
       --be-text: #cbd5e1;
       --accent: #a78bfa;
+      --tooltip-bg: #475569;
     }
 
     * { box-sizing: border-box; }
@@ -105,7 +107,7 @@
     .month-nav { display: flex; align-items: center; gap: 8px; }
     .month-nav h2 { font-size: 1.1rem; font-weight: 700; margin: 0; min-width: 160px; text-align: center; }
 
-    .stats-bar { display: flex; align-items: center; gap: 10px; }
+    .stats-bar { display: flex; align-items: center; gap: 8px; }
 
     .pnl-container { display: flex; align-items: center; gap: 6px; font-size: 1rem; font-weight: 700; }
 
@@ -127,6 +129,47 @@
       font-size: 0.75rem;
       font-weight: 700;
       color: var(--text-muted);
+    }
+
+    /* Button styles & Hover Tooltips */
+    .btn {
+      position: relative;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text-main);
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    /* Tooltip styling on buttons */
+    .btn[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--tooltip-bg);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.2s, visibility 0.2s;
+      z-index: 100;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      pointer-events: none;
+      font-weight: 500;
+    }
+
+    .btn:hover::after {
+      visibility: visible;
+      opacity: 1;
     }
 
     .calendar-grid {
@@ -210,18 +253,6 @@
     .week-label { font-size: 0.6rem; color: var(--text-muted); font-weight: 700; }
     .week-total { font-size: 0.8rem; font-weight: 700; }
 
-    .btn {
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--card-bg);
-      color: var(--text-main);
-      cursor: pointer;
-      font-family: inherit;
-      font-weight: 600;
-      font-size: 0.8rem;
-    }
-
     footer {
       margin-top: 10px;
       text-align: center;
@@ -252,9 +283,9 @@
 
   <header>
     <div class="month-nav">
-      <button class="btn" onclick="changeMonth(-1)">◀</button>
+      <button class="btn" onclick="changeMonth(-1)" data-tooltip="Previous Month">◀</button>
       <h2 id="current-month-display"></h2>
-      <button class="btn" onclick="changeMonth(1)">▶</button>
+      <button class="btn" onclick="changeMonth(1)" data-tooltip="Next Month">▶</button>
     </div>
     
     <div class="stats-bar">
@@ -263,9 +294,15 @@
         <div class="monthly-r-total" id="monthly-r-total"></div>
       </div>
       <div class="badge" id="month-stats"></div>
-      <button class="btn" onclick="toggleUnit()" id="unit-toggle">Mode: R</button>
-      <button class="btn" onclick="toggleTheme()" id="theme-toggle">🌙</button>
-      <button class="btn" onclick="takeShot()">📸</button>
+
+      <button class="btn" onclick="toggleUnit()" id="unit-toggle" data-tooltip="Switch R / $ View">Mode: R</button>
+      <button class="btn" onclick="toggleTheme()" id="theme-toggle" data-tooltip="Toggle Dark Mode">🌙</button>
+      <button class="btn" onclick="takeShot()" data-tooltip="Save Screenshot">📸</button>
+      <button class="btn" onclick="exportCSV()" data-tooltip="Export Data (CSV)">📤</button>
+      
+      <label class="btn" data-tooltip="Import Data (CSV)" style="display: flex; align-items: center; cursor: pointer;">
+        📥 <input type="file" id="csv-input" accept=".csv" style="display: none;" onchange="importCSV(event)">
+      </label>
     </div>
   </header>
 
@@ -283,7 +320,7 @@
   <footer>Vibe coded by @0x5ive</footer>
 </div>
 
-<button class="btn btn-reset" onclick="resetData()">Reset Data</button>
+<button class="btn btn-reset" onclick="resetData()" data-tooltip="Clear current month trades">Reset Data</button>
 
 <script>
   const daysGrid = document.getElementById('calendar-days');
@@ -365,7 +402,7 @@
             activeDays++;
             totalTradesCount += dayData.length;
             dayData.forEach(t => { 
-              if(t.r > 0) winningTradesCount++;
+              if(t.r > 0) winningTradesCount++; 
               else if(t.r < 0) lossTradesCount++;
               else beTradesCount++;
             });
@@ -412,7 +449,6 @@
     monthlyRLabel.textContent = formatR(monthTotal);
     monthlyRLabel.className = `monthly-r-total ${monthTotal > 0 ? 'win' : (monthTotal < 0 ? 'loss' : 'be')}`;
     
-    // Updated Badge HTML with dashes and "trading days"
     document.getElementById('month-stats').innerHTML = `
       ${activeDays} trading days | ${totalTradesCount} trades 
       (<span style="color: var(--win-text)">${winningTradesCount}W</span> - 
@@ -462,6 +498,62 @@
 
       render();
     }
+  }
+
+  function exportCSV() {
+    let csvContent = "Date,Direction,Pair,R-Multiple\n";
+    Object.keys(trades).forEach(date => {
+      trades[date].forEach(t => {
+        csvContent += `${date},${t.dir.replace('/', '')},${t.pair},${t.r}\n`;
+      });
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `trading_journal_backup.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+  function importCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const text = e.target.result;
+      const lines = text.split('\n');
+      const newTrades = {};
+      
+      for (let i = 1; i < lines.length; i++) {
+        if (!lines[i].trim()) continue;
+        const [date, dir, pair, r] = lines[i].split(',');
+        if (!date || !dir || !pair || r === undefined) continue;
+        
+        if (!newTrades[date]) newTrades[date] = [];
+        newTrades[date].push({
+          dir: dir.trim() + "/",
+          pair: pair.trim(),
+          r: parseFloat(r)
+        });
+      }
+      
+      if (confirm("Importing will merge these trades with your current data. Continue?")) {
+        Object.keys(newTrades).forEach(date => {
+          if (!trades[date]) trades[date] = [];
+          trades[date] = [...trades[date], ...newTrades[date]];
+        });
+        localStorage.setItem('tradingDataV6', JSON.stringify(trades));
+        render();
+        alert("Import successful!");
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = "";
   }
 
   async function takeShot() {
