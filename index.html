@@ -342,7 +342,7 @@
     const firstDayIndex = new Date(year, month, 1).getDay();
     const lastDay = new Date(year, month + 1, 0).getDate();
     
-    let monthTotal = 0, totalTradesCount = 0, winningTradesCount = 0, activeDays = 0, dayCounter = 1, weekCounter = 1;
+    let monthTotal = 0, totalTradesCount = 0, winningTradesCount = 0, lossTradesCount = 0, beTradesCount = 0, activeDays = 0, dayCounter = 1, weekCounter = 1;
 
     for (let row = 0; row < 6; row++) {
       let weekTotal = 0, hasDayInWeek = false;
@@ -364,7 +364,11 @@
             dayEl.classList.add(dailySum > 0 ? 'win-day' : (dailySum < 0 ? 'loss-day' : 'be-day'));
             activeDays++;
             totalTradesCount += dayData.length;
-            dayData.forEach(t => { if(t.r > 0) winningTradesCount++; });
+            dayData.forEach(t => { 
+              if(t.r > 0) winningTradesCount++;
+              else if(t.r < 0) lossTradesCount++;
+              else beTradesCount++;
+            });
             monthTotal += dailySum;
             weekTotal += dailySum;
           }
@@ -407,7 +411,16 @@
     const winRate = totalTradesCount > 0 ? ((winningTradesCount / totalTradesCount) * 100).toFixed(1) : 0;
     monthlyRLabel.textContent = formatR(monthTotal);
     monthlyRLabel.className = `monthly-r-total ${monthTotal > 0 ? 'win' : (monthTotal < 0 ? 'loss' : 'be')}`;
-    document.getElementById('month-stats').textContent = `${activeDays} trading days | ${totalTradesCount} trades | ${winRate}% WR`;
+    
+    // Updated Badge HTML with dashes and "trading days"
+    document.getElementById('month-stats').innerHTML = `
+      ${activeDays} trading days | ${totalTradesCount} trades 
+      (<span style="color: var(--win-text)">${winningTradesCount}W</span> - 
+       <span style="color: var(--loss-text)">${lossTradesCount}L</span> - 
+       <span style="color: var(--be-text)">${beTradesCount}BE</span>) 
+      | ${winRate}% WR
+    `;
+
     localStorage.setItem('tradingDataV6', JSON.stringify(trades));
   }
 
