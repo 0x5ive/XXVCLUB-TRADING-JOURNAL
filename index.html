@@ -72,6 +72,28 @@
       padding: 10px;
     }
 
+    /* Orientation Warning Overlay */
+    #orientation-warning {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg);
+      z-index: 9999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    #orientation-warning h2 { color: var(--accent); margin: 15px 0 10px 0; }
+    #orientation-warning p { color: var(--text-muted); max-width: 300px; line-height: 1.5; }
+
+    @media screen and (max-width: 950px) and (orientation: portrait) {
+      #orientation-warning { display: flex; }
+      .app { display: none !important; }
+    }
+
     .app {
       width: 100%;
       height: 100%;
@@ -106,8 +128,9 @@
       flex-shrink: 0;
     }
 
-    .month-nav { display: flex; align-items: center; gap: 8px; }
-    .month-nav h2 { font-size: 1.1rem; font-weight: 700; margin: 0; min-width: 160px; text-align: center; }
+    .date-controls { display: flex; align-items: center; gap: 20px; }
+    .nav-group { display: flex; align-items: center; gap: 8px; }
+    .nav-group h2 { font-size: 1.1rem; font-weight: 700; margin: 0; text-align: center; text-transform: uppercase; }
 
     .stats-bar { display: flex; align-items: center; gap: 8px; }
 
@@ -301,14 +324,27 @@
 </head>
 <body>
 
+<div id="orientation-warning">
+  <div style="font-size: 50px;">🔄</div>
+  <h2>Rotate Your Device</h2>
+  <p>To view your trading journal properly, please turn your phone to <b>Landscape Mode</b>.</p>
+</div>
+
 <div class="app" id="app">
   <div class="app-title">XXVCLUB TRADING JOURNAL</div>
 
   <header>
-    <div class="month-nav">
-      <button class="btn ui-control" onclick="changeMonth(-1)" data-tooltip="Previous Month">◀</button>
-      <h2 id="current-month-display"></h2>
-      <button class="btn ui-control" onclick="changeMonth(1)" data-tooltip="Next Month">▶</button>
+    <div class="date-controls">
+      <div class="nav-group">
+        <button class="btn ui-control" onclick="changeMonth(-1)" data-tooltip="Previous Month">◀</button>
+        <h2 id="month-display" style="min-width: 130px;"></h2>
+        <button class="btn ui-control" onclick="changeMonth(1)" data-tooltip="Next Month">▶</button>
+      </div>
+      <div class="nav-group">
+        <button class="btn ui-control" onclick="changeYear(-1)" data-tooltip="Previous Year">◀</button>
+        <h2 id="year-display" style="min-width: 70px;"></h2>
+        <button class="btn ui-control" onclick="changeYear(1)" data-tooltip="Next Year">▶</button>
+      </div>
     </div>
     
     <div class="stats-bar">
@@ -392,7 +428,8 @@
 
 <script>
   const daysGrid = document.getElementById('calendar-days');
-  const monthDisplay = document.getElementById('current-month-display');
+  const monthDisplay = document.getElementById('month-display');
+  const yearDisplay = document.getElementById('year-display');
   const monthlyRLabel = document.getElementById('monthly-r-total');
   
   let currentDate = new Date();
@@ -431,6 +468,7 @@
   }
 
   function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); render(); }
+  function changeYear(delta) { currentDate.setFullYear(currentDate.getFullYear() + delta); render(); }
 
   function formatR(val, showPlus = true) {
     if (val === 0) return "BE";
@@ -445,7 +483,9 @@
     daysGrid.innerHTML = '';
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    monthDisplay.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+    
+    monthDisplay.textContent = currentDate.toLocaleString('default', { month: 'long' });
+    yearDisplay.textContent = year;
 
     const firstDayIndex = new Date(year, month, 1).getDay();
     const lastDay = new Date(year, month + 1, 0).getDate();
@@ -614,21 +654,15 @@
   async function takeShot() {
     const app = document.getElementById('app');
     const controls = document.querySelectorAll('.ui-control');
-    
-    // Hide controls
     controls.forEach(c => c.style.display = 'none');
-    
     const canvas = await html2canvas(app, { 
       scale: 2, 
       backgroundColor: getComputedStyle(document.body).getPropertyValue('--bg'),
       logging: false
     });
-    
-    // Restore controls
     controls.forEach(c => c.style.display = '');
-
     const link = document.createElement('a');
-    link.download = `Journal_${monthDisplay.textContent}.png`;
+    link.download = `Journal_${monthDisplay.textContent}_${yearDisplay.textContent}.png`;
     link.href = canvas.toDataURL();
     link.click();
   }
