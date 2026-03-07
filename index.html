@@ -497,7 +497,6 @@
 
     for (let row = 0; row < 6; row++) {
       let weekTotal = 0, hasDayInWeek = false;
-      // New Weekly Dash Stats
       let wBuys = 0, wSells = 0, wWins = 0, wLosses = 0, wBEs = 0;
 
       for (let col = 0; col < 7; col++) {
@@ -518,12 +517,10 @@
             activeDays++;
             totalTradesCount += dayData.length;
             dayData.forEach(t => { 
-              // Overall month counts
               if(t.r > 0) winningTradesCount++; 
               else if(t.r < 0) lossTradesCount++;
               else beTradesCount++;
 
-              // Weekly dashboard counts
               if(t.dir.includes('B')) wBuys++;
               if(t.dir.includes('S')) wSells++;
               if(t.r > 0) wWins++;
@@ -564,9 +561,9 @@
           <div class="week-total" style="color: ${weekTotal > 0 ? 'var(--win-text)' : (weekTotal < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">
             ${formatR(weekTotal)}
           </div>
-          <div class="week-dashboard">
-            <div>B: ${wBuys} | S: ${wSells}</div>
-            <div>
+          <div class="week-dashboard" style="background: rgba(124, 58, 237, 0.05); border: 1px solid var(--border); border-radius: 6px; padding: 5px; width: 90%; margin-top: 4px;">
+            <div style="margin-bottom: 2px; font-weight: 800;">B: ${wBuys} | S: ${wSells}</div>
+            <div style="font-size: 0.48rem; opacity: 0.9;">
               <span style="color: var(--win-text)">W: ${wWins}</span> | 
               <span style="color: var(--loss-text)">L: ${wLosses}</span> | 
               BE: ${wBEs}
