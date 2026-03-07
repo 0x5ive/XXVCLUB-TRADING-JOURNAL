@@ -315,9 +315,10 @@
     .day.win-day { border-top: 3px solid var(--win-text); }
     .day.loss-day { border-top: 3px solid var(--loss-text); }
     .day.be-day { border-top: 3px solid var(--be-text); }
-    .week-summary { border: 1px solid var(--border); background: var(--bg); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4px; }
-    .week-label { font-size: 0.6rem; color: var(--text-muted); font-weight: 700; }
-    .week-total { font-size: 0.8rem; font-weight: 700; }
+    .week-summary { border: 1px solid var(--border); background: var(--bg); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 4px; text-align: center; }
+    .week-label { font-size: 0.6rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px; }
+    .week-total { font-size: 0.8rem; font-weight: 700; margin-bottom: 4px; }
+    .week-dashboard { font-size: 0.52rem; font-weight: 700; line-height: 1.2; text-transform: uppercase; color: var(--text-muted); }
     footer { margin-top: 10px; text-align: center; font-size: 0.65rem; color: var(--text-muted); opacity: 0.8; font-weight: 500; }
     .btn-reset { position: fixed; bottom: 10px; right: 10px; background: var(--loss-bg); color: var(--loss-text); font-size: 0.65rem; opacity: 0.6; }
     .delete-trade { cursor: pointer; margin-left: 4px; opacity: 0.5; }
@@ -402,7 +403,7 @@
       <ul>
         <li><b>Color-Coded Progress:</b> The calendar acts as a heat map. Days turn Green for profits, Red for losses, and Gray for breaking even, giving you an immediate visual of your "winning streaks."</li>
         <li><b>Real-Time Scoreboard:</b> A summary at the top tracks your Win Rate percentage and gives you a count of exactly how many wins, losses, and break-evens you have for the month.</li>
-        <li><b>Weekly Snapshots:</b> The journal automatically adds up your results for each individual week.</li>
+        <li><b>Weekly Snapshots:</b> The journal automatically adds up your results for each individual week, providing a breakdown of Buys/Sells and Win/Loss outcomes.</li>
       </ul>
     </div>
 
@@ -441,7 +442,6 @@
   let riskPerTrade = 100;
 
   function openModal() { document.getElementById('infoModal').style.display = 'flex'; }
-  // FIXED: Corrected display none assignment
   function closeModal() { document.getElementById('infoModal').style.display = 'none'; }
 
   function toggleTheme() {
@@ -497,6 +497,8 @@
 
     for (let row = 0; row < 6; row++) {
       let weekTotal = 0, hasDayInWeek = false;
+      // New Weekly Dash Stats
+      let wBuys = 0, wSells = 0, wWins = 0, wLosses = 0, wBEs = 0;
 
       for (let col = 0; col < 7; col++) {
         const dayEl = document.createElement('div');
@@ -516,9 +518,17 @@
             activeDays++;
             totalTradesCount += dayData.length;
             dayData.forEach(t => { 
+              // Overall month counts
               if(t.r > 0) winningTradesCount++; 
               else if(t.r < 0) lossTradesCount++;
               else beTradesCount++;
+
+              // Weekly dashboard counts
+              if(t.dir.includes('B')) wBuys++;
+              if(t.dir.includes('S')) wSells++;
+              if(t.r > 0) wWins++;
+              else if(t.r < 0) wLosses++;
+              else wBEs++;
             });
             monthTotal += dailySum;
             weekTotal += dailySum;
@@ -549,9 +559,18 @@
       const weekEl = document.createElement('div');
       weekEl.className = 'week-summary';
       if (hasDayInWeek) {
-        weekEl.innerHTML = `<div class="week-label">WEEK ${weekCounter}</div>
+        weekEl.innerHTML = `
+          <div class="week-label">WEEK ${weekCounter}</div>
           <div class="week-total" style="color: ${weekTotal > 0 ? 'var(--win-text)' : (weekTotal < 0 ? 'var(--loss-text)' : 'var(--be-text)')}">
             ${formatR(weekTotal)}
+          </div>
+          <div class="week-dashboard">
+            <div>B: ${wBuys} | S: ${wSells}</div>
+            <div>
+              <span style="color: var(--win-text)">W: ${wWins}</span> | 
+              <span style="color: var(--loss-text)">L: ${wLosses}</span> | 
+              BE: ${wBEs}
+            </div>
           </div>`;
         weekCounter++;
       } else { weekEl.style.visibility = 'hidden'; }
