@@ -1,0 +1,10 @@
+{
+  "updated_at": null,
+  "source": "SiftingIO",
+  "rules": {
+    "high_impact_usd": true,
+    "weekly_no_trade_day": "Thursday"
+  },
+  "events": [],
+  "weekly_no_trade_days": []
+}
