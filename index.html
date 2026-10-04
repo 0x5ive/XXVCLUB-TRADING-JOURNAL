@@ -696,7 +696,121 @@
     link.click();
   }
 
+
+  let economicNews = { events: [], weekly_no_trade_days: [] };
+  let newsByDate = {};
+
+  async function loadEconomicNews() {
+    try {
+      const response = await fetch('./news.json?ts=' + Date.now(), { cache: 'no-store' });
+      if (!response.ok) throw new Error('news.json unavailable');
+      economicNews = await response.json();
+      newsByDate = {};
+      (economicNews.events || []).forEach(function(e) {
+        const key = String(e.scheduled_at || e.date || '').slice(0, 10);
+        if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(key)) return;
+        (newsByDate[key] || (newsByDate[key] = [])).push(e);
+      });
+      render();
+    } catch (error) {
+      console.warn('Economic news unavailable:', error);
+    }
+  }
+
+  function showNews(dateKey) {
+    const events = newsByDate[dateKey] || [];
+    const parts = dateKey.split('-').map(Number);
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    const isThursday = date.getDay() === 4;
+
+    document.getElementById('news-modal-title').textContent =
+      date.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    let html = isThursday
+      ? '<div class="news-item"><strong>🚫 Weekly No Trade Day</strong><div class="news-meta">Thursday — your standing weekly no-trade rule.</div></div>'
+      : '';
+
+    events.forEach(function(e) {
+      const high = String(e.impact || '').toLowerCase() === 'high';
+      html += '<div class="news-item"><strong>' +
+        (high ? '🔴' : '🟠') + ' ' + (e.name || 'Economic event') +
+        '</strong><div class="news-meta">' +
+        (e.currency || 'USD') + ' · ' + (e.impact || 'Unknown') + ' impact · ' +
+        (e.time_utc ? e.time_utc + ' UTC' : 'Time unavailable') +
+        (e.agency ? ' · ' + e.agency : '') +
+        '</div></div>';
+    });
+
+    if (!html) {
+      html = '<div class="news-item"><strong>📅 No scheduled economic news</strong><div class="news-meta">No economic warning is scheduled for this date.</div></div>';
+    }
+
+    document.getElementById('news-modal-list').innerHTML = html;
+    document.getElementById('newsModal').style.display = 'flex';
+  }
+
+  function closeNewsModal() {
+    document.getElementById('newsModal').style.display = 'none';
+  }
+
+  function decorateCalendarWithNews() {
+    document.querySelectorAll('.news-markers').forEach(function(el) { el.remove(); });
+    document.querySelectorAll('#calendar-days .day:not(.empty)').forEach(function(el) {
+      const dayNum = Number((el.querySelector('.day-num') || {}).textContent || 0);
+      if (!dayNum) return;
+
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const date = new Date(year, month, dayNum);
+      const key = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(dayNum).padStart(2, '0');
+      const events = newsByDate[key] || [];
+      const isThursday = date.getDay() === 4;
+      const high = events.some(function(e) { return String(e.impact || '').toLowerCase() === 'high'; });
+      const medium = events.some(function(e) { return String(e.impact || '').toLowerCase() === 'medium'; });
+
+      if (!high && !medium && !isThursday) return;
+
+      if (high) el.classList.add('news-high');
+      if (!high && medium) el.classList.add('news-medium');
+
+      const header = el.querySelector('.day-header');
+      if (!header) return;
+
+      const markers = document.createElement('span');
+      markers.className = 'news-markers';
+
+      if (isThursday) {
+        const noTrade = document.createElement('span');
+        noTrade.className = 'no-trade-badge';
+        noTrade.textContent = '🚫';
+        noTrade.title = 'Weekly No Trade Day';
+        markers.appendChild(noTrade);
+      }
+
+      if (high || medium) {
+        const badge = document.createElement('button');
+        badge.className = 'news-badge ' + (high ? 'high' : 'medium');
+        badge.textContent = high ? '🔴' : '🟠';
+        badge.title = high ? 'High-impact USD news' : 'Medium-impact USD news';
+        badge.onclick = function(event) {
+          event.stopPropagation();
+          showNews(key);
+        };
+        markers.appendChild(badge);
+      }
+
+      header.appendChild(markers);
+    });
+  }
+
+  const originalRender = render;
+  render = function() {
+    originalRender();
+    decorateCalendarWithNews();
+  };
+
   render();
+  loadEconomicNews();
 </script>
 </body>
 </html>
