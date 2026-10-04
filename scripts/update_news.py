@@ -13,7 +13,6 @@ params = urllib.parse.urlencode({
     "from": now.strftime("%Y-%m-%dT00:00:00Z"),
     "to": end.strftime("%Y-%m-%dT23:59:59Z"),
     "country": "US",
-    "impact": "high",
     "limit": 500,
 })
 
@@ -29,6 +28,7 @@ with urllib.request.urlopen(request, timeout=30) as response:
     payload = json.load(response)
 
 events = []
+
 for event in payload.get("events", []):
     scheduled = event.get("scheduled_at")
     if not scheduled:
