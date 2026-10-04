@@ -1,0 +1,29 @@
+name: Update economic news
+
+on:
+  schedule:
+    - cron: "17 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update news.json
+        env:
+          SIFTING_API_KEY: ${{ secrets.SIFTING_API_KEY }}
+        run: python scripts/update_news.py
+
+      - name: Commit updated news
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add news.json
+          git diff --cached --quiet || git commit -m "chore: update economic news"
+          git push
